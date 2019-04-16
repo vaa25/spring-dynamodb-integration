@@ -1,1 +1,1 @@
-java 8 adoptetion of https://github.com/nielsutrecht/spring-dynamodb-integration/
+java 8 adoptation of https://github.com/nielsutrecht/spring-dynamodb-integration/
