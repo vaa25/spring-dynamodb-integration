@@ -39,7 +39,7 @@ public class CounterRepository {
     }
 
     public Optional<CounterEntity> get(String counter) {
-        var entity = mapper.load(CounterEntity.class, counter);
+        final CounterEntity entity = mapper.load(CounterEntity.class, counter);
 
         return Optional.ofNullable(entity);
     }
@@ -53,10 +53,8 @@ public class CounterRepository {
         log.info("Creating table '{}'", TABLE);
 
         CreateTableRequest request = new CreateTableRequest()
-            .withAttributeDefinitions(
-                new AttributeDefinition("counter", ScalarAttributeType.S))
-            .withKeySchema(
-                    new KeySchemaElement("counter", KeyType.HASH))
+            .withAttributeDefinitions(new AttributeDefinition("counter", ScalarAttributeType.S))
+            .withKeySchema(new KeySchemaElement("counter", KeyType.HASH))
             .withProvisionedThroughput(new ProvisionedThroughput(10L, 10L))
             .withTableName("counters");
 

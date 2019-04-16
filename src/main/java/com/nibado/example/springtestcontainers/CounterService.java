@@ -24,9 +24,11 @@ public class CounterService {
     }
 
     public Counter increment(String counter) {
-        var opt = repository.get(counter);
+        final Optional<CounterRepository.CounterEntity> opt = repository.get(counter);
 
-        var inc = opt.map(c -> new Counter(c.getCounter(), c.getValue() + 1)).orElse(new Counter(counter, 1));
+        final Counter inc = opt
+            .map(c -> new Counter(c.getCounter(), c.getValue() + 1))
+            .orElse(new Counter(counter, 1));
 
         repository.put(inc.getName(), inc.getValue());
 

@@ -4,6 +4,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.nibado.example.springtestcontainers.dto.Counter;
 import com.nibado.example.springtestcontainers.dto.Counters;
+import java.util.HashMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 
 import java.util.Map;
+import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,7 +42,7 @@ public class CounterIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void findAll() {
         putCounter("findAll", 42);
-        var response = restTemplate.getForObject("/counter", Counters.class);
+        final Counters response = restTemplate.getForObject("/counter", Counters.class);
 
         assertThat(response.getCounters()).containsExactly(new Counter("findAll", 42));
     }
@@ -49,14 +51,14 @@ public class CounterIntegrationTest extends AbstractIntegrationTest {
     public void get() {
         putCounter("get", 42);
 
-        var response = restTemplate.getForObject("/counter/get", Counter.class);
+        final Counter response = restTemplate.getForObject("/counter/get", Counter.class);
 
         assertThat(response).isEqualTo(new Counter("get", 42));
     }
 
     @Test
     public void get_404() {
-        var response = restTemplate.getForEntity("/counter/get_404", Counter.class);
+        final ResponseEntity<Counter> response = restTemplate.getForEntity("/counter/get_404", Counter.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
@@ -71,7 +73,7 @@ public class CounterIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void increment() {
-        var response = restTemplate.postForObject("/counter/increment", null, Counter.class);
+        Counter response = restTemplate.postForObject("/counter/increment", null, Counter.class);
 
         assertThat(response).isEqualTo(new Counter("increment", 1));
 
@@ -81,8 +83,9 @@ public class CounterIntegrationTest extends AbstractIntegrationTest {
     }
 
     private void putCounter(String key, int value) {
-        dynamoDB.putItem(TABLE, Map.of("counter",
-            new AttributeValue().withS(key), "value",
-            new AttributeValue().withN(Integer.toString(value))));
+        final HashMap<String, AttributeValue> map = new HashMap<>();
+        map.put("counter", new AttributeValue().withS(key));
+        map.put("value", new AttributeValue().withN(Integer.toString(value)));
+        dynamoDB.putItem(TABLE, map);
     }
 }
